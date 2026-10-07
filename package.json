@@ -1,0 +1,12 @@
+{
+  "name": "subpulse",
+  "version": "0.2.0",
+  "private": true,
+  "description": "How active are the YouTube channels you follow?",
+  "scripts": {
+    "start": "node server/index.js"
+  },
+  "engines": {
+    "node": ">=22.13"
+  }
+}

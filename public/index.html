@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SubPulse</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">▶</span>
+      <span>SubPulse</span>
+    </div>
+    <div class="topbar-actions">
+      <span id="quota" class="quota" hidden title="YouTube Data API units used today by this app (all users). Resets at midnight Pacific Time."></span>
+      <span id="lastSync" class="quota" hidden></span>
+      <button id="syncBtn" class="btn btn-primary" hidden>Sync</button>
+      <button id="signOutBtn" class="btn btn-ghost" hidden>Sign out</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Shown when the server has no Google credentials -->
+    <section id="setup" class="panel" hidden>
+      <h1>Setup needed</h1>
+      <p>The server is missing its Google credentials. Add them to the <code>.env</code> file in the project folder, then restart the server.</p>
+      <ol>
+        <li>Google Cloud Console → your project → <strong>Credentials</strong> (or Google Auth Platform → Clients) → your <strong>Web application</strong> client.</li>
+        <li>Under <strong>Authorized redirect URIs</strong>, add <code>http://localhost:5173/auth/callback</code>.</li>
+        <li>Copy the <strong>Client ID</strong> and <strong>Client secret</strong> into <code>.env</code>.</li>
+        <li>Restart: <code>npm start</code></li>
+      </ol>
+      <p class="muted">Full steps are in README.md.</p>
+    </section>
+
+    <!-- Shown before sign-in -->
+    <section id="welcome" class="panel hero" hidden>
+      <h1>How active are the channels you follow?</h1>
+      <p>Sign in with Google, then click Sync to see, for every channel you're subscribed to: days since the last upload, how often they post, Shorts vs. videos, and average video length.</p>
+      <a href="/auth/login" class="btn btn-primary btn-lg">Sign in with Google</a>
+      <p class="muted small">Read-only access to your YouTube account. You can delete all stored data at any time.</p>
+    </section>
+
+    <section id="status" class="status" hidden>
+      <div class="status-text" id="statusText"></div>
+      <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+    </section>
+
+    <div id="error" class="error" role="alert" hidden></div>
+    <div id="info" class="info" role="status" hidden></div>
+
+
+    <section id="dashboard" hidden>
+      <div class="summary" id="summary"></div>
+
+      <div class="toolbar">
+        <input id="search" type="search" placeholder="Search channels…" aria-label="Search channels" />
+        <select id="filter" aria-label="Filter channels">
+          <option value="all">All channels</option>
+          <option value="active7">Posted in last 7 days</option>
+          <option value="inactive30">Inactive 30+ days</option>
+          <option value="inactive180">Inactive 6+ months</option>
+          <option value="shorts">Mostly Shorts</option>
+          <option value="videos">Mostly videos</option>
+        </select>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-sort="title">Channel</th>
+              <th data-sort="daysSince">Last upload</th>
+              <th data-sort="avgGapDays">Posting frequency</th>
+              <th data-sort="shortsShare">Shorts vs. videos</th>
+              <th data-sort="avgLongSec">Avg video length</th>
+              <th><span class="visually-hidden">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <p class="muted small footnote">
+        Stats are based on each channel's last up to 50 uploads. Shorts are detected via YouTube's Shorts playlist;
+        values marked <span class="est">est.</span> fall back to a ≤60-second duration check.
+        Nothing is fetched from YouTube until you click Sync. Channel stats synced by anyone in the last few hours are reused;
+        stored data is deleted after 30 days without a sync.
+      </p>
+      <p class="small footnote">
+        <button id="deleteBtn" class="btn btn-ghost btn-danger">Disconnect &amp; delete my data</button>
+      </p>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
